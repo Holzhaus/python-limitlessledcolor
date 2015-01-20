@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import colorsys
 import math
 
@@ -64,6 +66,7 @@ def name_to_ledcolor(name):
         return NAMES[name]
 
 if __name__ == "__main__":
+    # Output color precision table
     testcolors = ((0x00, 0xEE82EE),
                   (0x10, 0x4169E1),
                   (0x20, 0x87CEFA),
@@ -88,17 +91,22 @@ if __name__ == "__main__":
             diff += 255
         elif diff > 128:
             diff -= 255
-        results.append([html, expected, calculated, diff])
+        colorstring = hex(html).ljust(8, '0')[2:].upper()
+        url = ("![%s](http://dummyimage.com/20x20/%s/%s.gif)"
+               % (colorstring, colorstring, colorstring))
+        results.append([html, expected, calculated, diff, url])
 
     results = sorted(results, key=lambda x: math.fabs(x[3]))
     print("Colors (ordered by calculation precision)")
-    colnames = ("HTML", "expected", "calculated", "diff")
-    colwidths = (8, 8, 10, 4)
-    coltitles = ' | '.join([colnames[i].ljust(colwidths[i]) for i in range(4)])
-    print(coltitles)
-    print("-"*len(coltitles))
+    colnames = ("HTML", "expected", "calculated", "diff", "color")
+    colwidths = (10, 10, 12, 6, 56)
+    print('| '+' | '.join([colnames[i].ljust(colwidths[i])
+                           for i in range(5)])+' |')
+    print('|-'+':|-'.join([("-"*colwidths[i]) for i in range(5)])+':|')
     for row in results:
         row[0] = ("0x%06x" % row[0])
         row[1] = ("0x%02x" % row[1])
         row[2] = ("0x%02x" % row[2])
-        print(' | '.join([str(row[i]).rjust(colwidths[i]) for i in range(4)]))
+        print('| '+' | '.join([(("`%s`" if i != 4 else "%s")
+                                % str(row[i])).rjust(colwidths[i])
+                               for i in range(5)])+' |')
